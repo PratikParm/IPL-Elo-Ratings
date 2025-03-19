@@ -1,6 +1,11 @@
+import sys
 import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from tqdm import tqdm
 from dotenv import load_dotenv
+from config import Config
 from pathlib import Path
 import pandas as pd
 from collections import defaultdict
@@ -24,13 +29,18 @@ PROJECT_PATH = Path(__file__).resolve().parent.parent
 MATCH_DATA_DIR = PROJECT_PATH / 'data/raw'
 
 # Base batting factors (no wide/no-ball)
-BASE_BATTING_FACTORS = {0: 0.35, 1: 0.45, 2: 0.6, 3: 0.7, 4: 0.8, 5: 0.9, 6: 0.95, "wicket": 0.0}
+BASE_BATTING_FACTORS = Config.BASE_BATTING_FACTORS
 
 # Base bowling factors (includes wide and no-ball)
-BASE_BOWLING_FACTORS = {0: 0.7, 1: 0.55, 2: 0.4, 3: 0.3, 4: 0.25, 5: 0.2, 6: 0.1, "wicket": 1.0, "wide": 0.2, "no-ball": 0.07}
+BASE_BOWLING_FACTORS = Config.BASE_BOWLING_FACTORS
 
 # Small adjustment factor to tweak values based on frequency deviation
-ADJUSTMENT_FACTOR = 0.05
+ADJUSTMENT_FACTOR = Config.ADJUSTMENT_FACTOR
+
+print('\nVenue Factors Configuration:\n-----------------')
+print(f'Base Batting Factors: {BASE_BATTING_FACTORS}')
+print(f'Base Bowling Factors: {BASE_BOWLING_FACTORS}')
+print(f'Adjustment Factor: {ADJUSTMENT_FACTOR}\n')
 
 def get_match_files():
     """Returns a list of all match file paths in the directory."""
