@@ -10,7 +10,7 @@ from pymongo import MongoClient
 
 # Load environment variables
 load_dotenv()
-client = MongoClient(os.environ("MONGODB_CONNECTION_STRING"))
+client = MongoClient(os.environ.get("MONGODB_CONNECTION_STRING"))
 db = client["cricket_elo"]
 player_ratings_collection = db["player_ratings"]
 
