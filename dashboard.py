@@ -10,7 +10,14 @@ from pymongo import MongoClient
 
 # Load environment variables
 load_dotenv()
+uri = os.environ.get("MONGODB_CONNECTION_STRING")
+print(f"MongoDB URI starts with: {uri[:10]}")  # Check the first part safely
+
+if not uri or not uri.startswith("mongodb+srv://"):
+    raise ValueError(f"Invalid MongoDB URI: {uri}")
+
 client = MongoClient(os.environ.get("MONGODB_CONNECTION_STRING"))
+print(os.environ.get("MONGODB_CONNECTION_STRING"))
 db = client["cricket_elo"]
 player_ratings_collection = db["player_ratings"]
 
