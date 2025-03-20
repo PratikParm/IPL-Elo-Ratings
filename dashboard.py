@@ -28,7 +28,7 @@ app.layout = html.Div(className="dashboard-container", children=[
 
     # Dashboard Title
     html.Header(children=[
-        html.H2("IPL Elo Rating Dashboard", className="dashboard-title")
+        html.H2("IPL Player Elo Rating Dashboard", className="dashboard-title")
     ]),
 
     html.H1("Current Leaderboards", className="section-title"),
