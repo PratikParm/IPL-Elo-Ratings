@@ -1,0 +1,253 @@
+/* Cricket Elo Rating Dashboard - IPL Themed CSS */
+
+/* General Styles */
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: #0d1117;
+    margin: 0;
+    padding: 0;
+    color: #c9d1d9;
+}
+
+/* IPL-Themed Header */
+header {
+    background: linear-gradient(90deg, #1c1b9b, #6a0dad); /* IPL Blue to Purple */
+    padding: 25px;
+    text-align: center;
+    border-bottom: 5px solid #ffd700; /* Gold Trophy Vibes */
+}
+
+header h2 {
+    color: #ffd700; /* Gold */
+    font-size: 30px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 10px rgba(255, 215, 0, 0.8); /* Trophy Glow */
+}
+
+/* Container */
+#container {
+    width: 85%;
+    margin: 20px auto;
+}
+
+/* Dashboard Styling */
+.dashboard-container {
+    background-color: #161b22;
+    color: #c9d1d9;
+    padding: 20px;
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+    border-radius: 10px;
+}
+
+/* Dashboard Title - IPL Inspired */
+.dashboard-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #ffd700; /* Gold */
+    text-transform: uppercase;
+    border-bottom: 3px solid #ffd700;
+    display: inline-block;
+    padding-bottom: 5px;
+    text-shadow: 1px 1px 8px rgba(255, 215, 0, 0.7);
+}
+
+/* Dropdown Section */
+.dropdown-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.dropdown-label {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #c9d1d9;
+}
+
+.dropdown {
+    width: 250px !important;
+    background-color: #21262d !important;
+    color: #c9d1d9 !important;
+    border: 1px solid #30363d !important;
+    border-radius: 6px !important;
+    padding: 8px !important;
+}
+
+/* Leaderboard Layout */
+.leaderboard-container {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 18px;
+}
+
+/* Individual Leaderboard Box */
+.leaderboard-box {
+    background: #21262d;
+    padding: 15px;
+    border-radius: 8px;
+    width: 340px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Leaderboard Styling */
+.leaderboard {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    max-width: 340px;
+}
+
+.leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #30363d;
+    font-size: 17px;
+    font-weight: 500;
+    color: #c9d1d9;
+}
+
+.leaderboard-item:last-child {
+    border-bottom: none;
+}
+
+.leaderboard-player {
+    flex-grow: 1;
+}
+
+.leaderboard-score {
+    font-weight: 600;
+    font-size: 19px;
+    color: #1f6feb;
+}
+
+/* Medal Colors for Top 3 */
+.gold {
+    background: #ffd700;
+    color: black;
+}
+
+.silver {
+    background: #c0c0c0;
+    color: black;
+}
+
+.bronze {
+    background: #cd7f32;
+    color: black;
+}
+
+/* Plotly Graph */
+.graph-container {
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 15px;
+    background: #161b22;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15);
+    margin-top: 20px;
+}
+
+/* Dropdown */
+.Select-control {
+    background: #21262d !important;  /* IPL-themed background */
+    border: 1px solid #30363d !important;  /* Darker border */
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    color: #c9d1d9 !important;  /* Light font color */
+}
+
+.Select-value-label {
+    color: #c9d1d9 !important;  /* Light font color */
+}
+
+.Select-control:hover {
+    border-color: #58a6ff !important;  /* IPL Blue border on hover */
+}
+
+.Select-dropdown {
+    background-color: #21262d !important;  /* Dropdown menu background */
+    border-radius: 6px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.Select-option {
+    background-color: #21262d !important;  /* Option background */
+    color: #c9d1d9 !important;  /* Option text color */
+}
+
+.Select-option:hover {
+    background-color: #1f6feb !important;  /* IPL Blue hover background */
+    color: white !important;  /* White text on hover */
+}
+
+.Select-menu-outer {
+    background-color: #21262d !important;  /* Outer menu background */
+    border-radius: 6px;
+}
+
+.Select-control:focus {
+    background: #21262d !important;
+    border-color: #58a6ff !important; 
+    color: #c9d1d9 !important;
+}
+
+.Select-input input {
+    color: #c9d1d9 !important;  /* Light text color while typing */
+}
+
+.Select-input input::placeholder {
+    color: #c9d1d9 !important;  /* Light placeholder text color */
+}
+
+/* Radio Buttons */
+.RadioItems {
+    margin-top: 10px;
+}
+
+.RadioItems label {
+    background-color: #21262d;
+    color: #c9d1d9;
+    border: 0px solid #c9d1d9;
+    padding: 8px 16px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-right: 10px;
+    transition: all 0.3s ease-in-out;
+}
+
+.RadioItems input[type="radio"] {
+    display: none;
+}
+
+.RadioItems input[type="radio"]:checked + label {
+    background-color: #c9d1d9; /* Light gray */
+    color: #0d1117; /* Dark text */
+    border-color: #c9d1d9;
+}
+
+.refresh-button {
+    background-color: #21262d;
+    color: #c9d1d9;
+    border: 0px solid #c9d1d9;
+    padding: 8px 16px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease-in-out;
+}
+
+.refresh-button:hover {
+    background-color: #c9d1d9;
+    color: #0d1117;
+}
