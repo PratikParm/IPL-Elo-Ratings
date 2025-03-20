@@ -102,6 +102,10 @@ def compute_venue_factors():
             batting_factors = {str(k): v for k, v in batting_factors.items()}
             bowling_factors = {str(k): v for k, v in bowling_factors.items()}
 
+            # Fixing wide and no-ball factors for all venues
+            bowling_factors['no-ball'] = BASE_BOWLING_FACTORS['no-ball']
+            bowling_factors['wide'] = BASE_BOWLING_FACTORS['wide']
+
             venue_data[venue] = {
                 "venue_name": venue,
                 "batting_factors": batting_factors,
