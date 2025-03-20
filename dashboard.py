@@ -299,4 +299,5 @@ def update_peak_rating_leaderboards(_):
 
 # Run app
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
+    port = int(os.environ.get("PORT", 5000))  # Get PORT from Render env
+    app.run_server(host="0.0.0.0", port=port)
