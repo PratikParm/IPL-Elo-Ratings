@@ -10,7 +10,7 @@ from pymongo import MongoClient
 
 # Load environment variables
 load_dotenv()
-client = MongoClient(os.getenv("MONGODB_CONNECTION_STRING"))
+client = MongoClient(os.environ("MONGODB_CONNECTION_STRING"))
 db = client["cricket_elo"]
 player_ratings_collection = db["player_ratings"]
 
@@ -299,4 +299,4 @@ def update_peak_rating_leaderboards(_):
 
 # Run app
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
