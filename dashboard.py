@@ -31,6 +31,8 @@ app.layout = html.Div(className="dashboard-container", children=[
         html.H2("IPL Elo Rating Dashboard", className="dashboard-title")
     ]),
 
+    html.H1("Current Leaderboards", className="section-title"),
+
     # Season Dropdown
     html.Div(className="dropdown-wrapper", children=[
         html.Label("Select Season", className="dropdown-label"),
@@ -45,6 +47,7 @@ app.layout = html.Div(className="dashboard-container", children=[
 
     # Leaderboard
     html.Div(className="leaderboard-container", children=[
+        
         html.Div(className="leaderboard-box", children=[
             html.H2("🏏 Top 10 Batters", className="section-title"),
             html.Ul(id="top-batters-leaderboard", className="leaderboard"),
@@ -56,7 +59,7 @@ app.layout = html.Div(className="dashboard-container", children=[
     ]),
 
     # Player Elo Evolution Section
-    html.H2("📈 Player Elo Evolution", className="section-title"),
+    html.H1("📈 Player Elo Evolution", className="section-title"),
 
     html.Div(className="dropdown-container", children=[
         dcc.Dropdown(id="player-selector", placeholder="Select a Player", className="dropdown"),
@@ -75,7 +78,24 @@ app.layout = html.Div(className="dashboard-container", children=[
 
     html.Div(className="graph-container", children=[
         dcc.Graph(id="player-elo-graph")
+    ]),
+
+    html.H1("Peak Leaderboards", className="section-title"),
+
+    # Manual Refresh Button
+    html.Button("Refresh Leaderboard", id="refresh-button", n_clicks=0, style={"marginBottom": "20px"}, className="refresh-button"),
+
+    # Peak Rating Leaderboards
+    html.Div(className="leaderboard-container", children=[
+    html.Div(className="leaderboard-box", children=[
+        html.H2("🏏 Top 10 Peak Batting Ratings", className="section-title"),
+        html.Ul(id="top-peak-batters-leaderboard", className="leaderboard"),
+    ]),
+    html.Div(className="leaderboard-box", children=[
+        html.H2("🎯 Top 10 Peak Bowling Ratings", className="section-title"),
+        html.Ul(id="top-peak-bowlers-leaderboard", className="leaderboard"),
     ])
+    ]),
 ])
 
 # Callback to update top 10 players
@@ -189,6 +209,7 @@ def update_player_stats(selected_player, rating_type):
     fig = go.Figure(
         data=[
             go.Scatter(
+                x=df.index,
                 y=df["rating"].tolist(),
                 mode="lines+markers",
                 name=rating_type.replace("_", " ").title(),
@@ -226,6 +247,55 @@ def update_player_stats(selected_player, rating_type):
         )
     )
     return player_options, fig
+
+@app.callback(
+    [Output("top-peak-batters-leaderboard", "children"), 
+     Output("top-peak-bowlers-leaderboard", "children")],
+    [Input("refresh-button", "n_clicks")]
+)
+def update_peak_rating_leaderboards(_):
+    """Fetch and display top 10 peak ratings along with the year achieved."""
+    peak_batter_data, peak_bowler_data = [], []
+
+    # Fetch all players
+    players = list(player_ratings_collection.find({}, {"_id": 0, "player_name": 1, "batting_rating": 1, "bowling_rating": 1}))
+
+    for player in players:
+        # Find Peak Batting Rating
+        if "batting_rating" in player and isinstance(player["batting_rating"], list):
+            peak_batting = max(player["batting_rating"], key=lambda r: r["rating"], default=None)
+            if peak_batting:
+                peak_batter_data.append({
+                    "player_name": player["player_name"],
+                    "rating": int(peak_batting["rating"]),
+                    "year": pd.to_datetime(peak_batting["date"]).year
+                })
+
+        # Find Peak Bowling Rating
+        if "bowling_rating" in player and isinstance(player["bowling_rating"], list):
+            peak_bowling = max(player["bowling_rating"], key=lambda r: r["rating"], default=None)
+            if peak_bowling:
+                peak_bowler_data.append({
+                    "player_name": player["player_name"],
+                    "rating": int(peak_bowling["rating"]),
+                    "year": pd.to_datetime(peak_bowling["date"]).year
+                })
+
+    # Sort by highest rating and keep top 10
+    peak_batter_data = sorted(peak_batter_data, key=lambda x: x["rating"], reverse=True)[:10]
+    peak_bowler_data = sorted(peak_bowler_data, key=lambda x: x["rating"], reverse=True)[:10]
+
+    # Generate leaderboard items
+    def generate_peak_leaderboard(data):
+        return [
+            html.Li([
+                html.Span(f"{idx + 1}. {player['player_name']} ({player['year']})", className="leaderboard-player"),
+                html.Span(str(player["rating"]), className="leaderboard-score")
+            ], className=f"leaderboard-item {'gold' if idx == 0 else 'silver' if idx == 1 else 'bronze' if idx == 2 else ''}")
+            for idx, player in enumerate(data)
+        ]
+
+    return generate_peak_leaderboard(peak_batter_data), generate_peak_leaderboard(peak_bowler_data)
 
 # Run app
 if __name__ == "__main__":
