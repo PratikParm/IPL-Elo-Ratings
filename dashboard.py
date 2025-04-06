@@ -17,7 +17,6 @@ player_ratings_collection = db["player_ratings"]
 # Fetch unique seasons
 seasons = player_ratings_collection.distinct("batting_rating.date")  # Get all dates
 seasons = sorted(set(pd.to_datetime(seasons).year))  # Extract unique years
-seasons.insert(0, "All")  # Add "All" option
 
 # Initialize Dash App
 app = dash.Dash(__name__)
@@ -39,7 +38,8 @@ app.layout = html.Div(className="dashboard-container", children=[
         dcc.Dropdown(
             id="season-selector",
             options=[{"label": str(year), "value": year} for year in seasons],
-            value="All",
+            value=str(seasons[-1]),  # Default to the latest season
+            clearable=False,
             placeholder="Select Season",
             className="dropdown"
         )
@@ -113,14 +113,14 @@ def update_top_players(season):
     for player in players:
         # Batting Ratings
         batting_ratings = player.get("batting_rating", [])
-        if season != "All":
+        if season != str(seasons[-1]):
             batting_ratings = [r for r in batting_ratings if r["date"].startswith(str(season))]
         if batting_ratings:
             batter_data.append({"player_name": player["player_name"], "rating": int(batting_ratings[-1]["rating"])})
 
         # Bowling Ratings
         bowling_ratings = player.get("bowling_rating", [])
-        if season != "All":
+        if season != str(seasons[-1]):
             bowling_ratings = [r for r in bowling_ratings if r["date"].startswith(str(season))]
         if bowling_ratings:
             bowler_data.append({"player_name": player["player_name"], "rating": int(bowling_ratings[-1]["rating"])})
