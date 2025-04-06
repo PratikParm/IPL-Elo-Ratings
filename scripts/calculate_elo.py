@@ -3,6 +3,7 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+import argparse
 from tqdm import tqdm
 from dotenv import load_dotenv
 from config import Config
@@ -22,8 +23,17 @@ client = MongoClient(os.getenv("MONGODB_CONNECTION_STRING"))
 db = client["cricket_elo"]
 venue_factors_collection = db["venue_factors"]
 player_ratings_collection = db["player_ratings"]
-player_ratings_collection.delete_many({})  # Reset player ratings (optional)
-player_ratings_collection.create_index([("player_name", 1)])
+processed_matches_collection = db["processed_matches"]
+
+# Create index on player_name if it doesn't exist
+existing_player_indexes = player_ratings_collection.index_information()
+if "player_name_1" not in existing_player_indexes:
+    player_ratings_collection.create_index([("player_name", 1)])
+
+# Create index on match_id if it doesn't exist
+existing_match_indexes = processed_matches_collection.index_information()
+if "match_id_1" not in existing_match_indexes:
+    processed_matches_collection.create_index("match_id", unique=True)
 
 # Elo Configuration
 DEFAULT_ELO = Config.DEFAULT_ELO
@@ -38,10 +48,15 @@ print(f'Decay Time Threshold: {DECAY_TIME_THRESHOLD}')
 print(f'Decay Rate: {DECAY_RATE}\n')
 
 def get_match_files():
-    """Returns a list of all match file paths in the directory."""
+    """Returns a list of all match file paths in the directory, excluding 'info.csv' and 'all_matches.csv'."""
     return sorted(
-        [MATCH_DATA_DIR / f for f in os.listdir(MATCH_DATA_DIR.resolve()) if not f.endswith("info.csv")],
-        key=lambda x: int(x.name.split(".")[0]))
+        [
+            MATCH_DATA_DIR / f
+            for f in os.listdir(MATCH_DATA_DIR.resolve())
+            if not f.endswith("info.csv") and f != "all_matches.csv" and not f.endswith(".txt")
+        ],
+        key=lambda x: int(x.name.split(".")[0])
+    )
 
 
 def get_venue_factors(venue_name):
@@ -143,6 +158,11 @@ def apply_seasonal_decay(first_match_date_of_season):
 
 def process_match_file(file_path):
     """Processes a match file and updates player Elo ratings efficiently."""
+    match_id = file_path.stem.split(".")[0]
+    if processed_matches_collection.find_one({"match_id": match_id}):
+        return
+    
+    processed_matches_collection.insert_one({"match_id": match_id})
     df = pd.read_csv(file_path)
     venue_name = df["venue"].iloc[0]
     match_date = df["start_date"].iloc[0]
@@ -220,6 +240,8 @@ def process_match_file(file_path):
 
     if bulk_updates:
         player_ratings_collection.bulk_write(bulk_updates)
+    
+    return
 
 
 def update_all_player_ratings():
@@ -241,5 +263,23 @@ def update_all_player_ratings():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Update player Elo ratings.")
+    parser.add_argument('--force-reprocess', action='store_true', help='Force reprocessing of all match files.')
+    args = parser.parse_args()
+
+    existing_processed_count = processed_matches_collection.count_documents({})
+    existing_elo_data = player_ratings_collection.count_documents({})
+
+    if existing_processed_count > 0 and existing_elo_data > 0:
+        if args.force_reprocess:
+            print("\nReprocessing all files...")
+            player_ratings_collection.delete_many({})
+            processed_matches_collection.delete_many({})
+        else:
+            print("\nProcessing only new match files...\n")
+
+    else:
+        print("\nProcessing all match files...\n")
+
     update_all_player_ratings()
-    print("Elo ratings updated for all players.")
+    print("\nElo ratings updated for all players.")
