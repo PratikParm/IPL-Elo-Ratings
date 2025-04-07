@@ -59,13 +59,13 @@ def get_match_files():
     )
 
 
-def get_venue_factors(venue_name):
+def get_venue_factors(venue_name, season):
     """Fetches venue-specific outcome factors from MongoDB."""
     venue_doc = venue_factors_collection.find_one({"venue_name": venue_name})
     if venue_doc:
-        return venue_doc["batting_factors"], venue_doc["bowling_factors"]
+        return venue_doc["batting_factors"][season], venue_doc["bowling_factors"][season]
     else:
-        print(f"Warning: No venue factors found for {venue_name}, using defaults.")
+        print(f"Warning: No venue factors found for {venue_name} and season {season}, using defaults.")
         return None, None
 
 
@@ -164,11 +164,12 @@ def process_match_file(file_path):
     
     processed_matches_collection.insert_one({"match_id": match_id})
     df = pd.read_csv(file_path)
+    season = str(df["season"].iloc[0])
     venue_name = df["venue"].iloc[0]
     match_date = df["start_date"].iloc[0]
 
     # Fetch venue-specific factors
-    batting_factors, bowling_factors = get_venue_factors(venue_name)
+    batting_factors, bowling_factors = get_venue_factors(venue_name, season)
     if batting_factors is None or bowling_factors is None:
         return
 
